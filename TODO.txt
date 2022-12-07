@@ -1,0 +1,10 @@
+1. Mitad de la matriz de adyacencia
+2. Pheromone initialization
+3. Choice of beta
+4. tau is initialized with NN or best NN?
+5. Global update también afecta al eje [n-1, 0]?
+6. Fix random number generation
+7. symmetric Pheromone matrix
+8. float o doble
+9. candidate list -> exploration -> denominador sobre unvisited o sobre candidate?
+10. When to refill the candidate list
