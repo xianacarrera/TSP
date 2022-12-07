@@ -305,7 +305,7 @@ when an ant cannot find suitable city to choose then
 the decision to choose a city will consider those 
 which are outside the candidate list.
 */
-/*
+
 vi ACO_candidate_list(Problem * problem)
 {
     int n = problem->n;
@@ -409,6 +409,5 @@ vi ACO_candidate_list(Problem * problem)
     }
     return best_ant_sol;
 }
-*/
 
 #endif /* ACO_HPP */

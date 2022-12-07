@@ -3,7 +3,8 @@
 #include "local_search.hpp"
 #include "helper.hpp"
 #include "nn.hpp"
-#include "aco.hpp"
+//#include "aco.hpp"
+#include "acov2.hpp"
 
 using namespace std;
 
@@ -33,17 +34,18 @@ vi ACO(Problem * problem, bool local_search)
 
     int n = problem->n;
     int numIterations = 0;       // End condition for the main loop
-    float alpha = 0.1f;             
+    float alpha = 2.0f;
+    float phi = 0.1f;             
     float beta = 2.0f;              // Importance of distance over pheromone  
     float rho = 0.1f;               // Evaporation rate
-    int Q0 = 90;                    // Probability of choosing the best solution
+    int Q0 = 95;                    // Probability of choosing the best solution
     int m = 10;                     // Number of ants
 
     // TODO: Initialize pheromone matrix
     //float tau0 = 1.0f / (n * length_best_NN(problem)); // Initial pheromone value
     //float tau0 = 1.0f / (n * length_NN(problem, rand() % n)); // Initial pheromone value
     //float tau0 = 1000 * n / ((float) length_NN(problem, rand() % n)); // Initial pheromone value
-    float tau0 = n / ((float) length_NN(problem, rand() % n)); // Initial pheromone value
+    float tau0 = 1 / (n * (float) length_NN(problem, rand() % n)); // Initial pheromone value
     //float tau0 = 100.0f;
     float tau;
 
@@ -60,7 +62,7 @@ vi ACO(Problem * problem, bool local_search)
 
     int next_city;               
 
-    while (((float) clock() - start_time) / CLOCKS_PER_SEC < 10){         // Run for 3 minutes
+    while (((float) clock() - start_time) / CLOCKS_PER_SEC < 180){         // Run for 3 minutes
         // Put each ant in a random initial city
         for (int k = 0; k < m; k++){        // For each ant
             ants[k][0] = rand() % n;
@@ -165,18 +167,19 @@ vi ACO(Problem * problem, bool local_search)
         }
 
         best_ant_sol = two_five_opt(problem, best_ant_sol);
+        best_ant_sol = two_opt_greedy(problem, best_ant_sol);
         //cout << "Best ant length: " << best_ant_length << endl;
 
         // Update pheromone matrix globally
         // Evaporate for every edge
         for (int i = 0; i < n; i++){
             for (int j = 0; j < n; j++){
-                pheromone_matrix[i][j] *= (1 - alpha);
+                pheromone_matrix[i][j] *= (1 - phi);
             }
         }
 
         // Update pheromone matrix with best ant's path
-        float constant = alpha / best_ant_length;
+        float constant = phi / best_ant_length;
         for (int j = 0; j < n - 1; j++){
             int node_1 = best_ant_sol[j];
             int node_2 = best_ant_sol[j + 1];
@@ -207,7 +210,7 @@ vi ACO_LS(Problem * problem){
 
     int n = problem->n;
     int numIterations = 1250;       // End condition for the main loop
-    float alpha = 0.1f;             
+    float phi = 0.1f;             
     float beta = 2.0f;              // Importance of distance over pheromone  
     float rho = 0.1f;               // Evaporation rate
     int Q0 = 90;                    // Probability of choosing the best solution
@@ -322,12 +325,12 @@ vi ACO_LS(Problem * problem){
         // Evaporate for every edge
         for (int i = 0; i < n; i++){
             for (int j = 0; j < n; j++){
-                pheromone_matrix[i][j] *= (1 - alpha);
+                pheromone_matrix[i][j] *= (1 - phi);
             }
         }
 
         // Update pheromone matrix with best ant's path
-        float constant = alpha / best_ant_length;
+        float constant = phi / best_ant_length;
         for (int j = 0; j < n - 1; j++){
             int node_1 = best_ant_sol[j];
             int node_2 = best_ant_sol[j + 1];
@@ -358,7 +361,7 @@ int main()
         //vi sol = best_NN(problem);
         //sol = two_five_opt(problem, sol);
         //sol = two_opt_greedy(problem, sol);
-        vi sol = ACO(problem, true);
+        vi sol = ACO_candidate(problem);
         
         if (!verify_sol(problem, sol)) {
             cout << "NOT A VALID SOLUTION FOR " << problem->name << "\n";
