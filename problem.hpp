@@ -16,12 +16,9 @@ const long double EPS = 1e-9;       // For floating-point comparisons, e.g. if(a
 
 // Data structures 
 typedef vector<int> vi;
-typedef vector<vi> vvi;
+typedef vector<vector<float>> vvf;
 #define F first
 #define S second
-
-// Create a random number generator
-mt19937 rng;
 
 
 class Problem 
@@ -31,7 +28,7 @@ class Problem
         int n;
         int best_known;
         vector<pair<float, float>> points;
-        vvi dist_matrix;
+        vvf dist_matrix;
 
         Problem(string problem_name){
             this->name = problem_name;
@@ -41,6 +38,25 @@ class Problem
         }
 
     private:
+
+        vector<string> split(string s, string delimiter) {
+        size_t pos_end;
+        size_t pos_start = 0;
+        size_t delim_len = delimiter.length();
+
+        string token;
+        vector<string> res;
+
+        while ((pos_end = s.find (delimiter, pos_start)) != string::npos) {
+            token = s.substr (pos_start, pos_end - pos_start);
+            pos_start = pos_end + delim_len;
+            res.push_back (token);
+        }
+
+        res.push_back (s.substr (pos_start));
+        return res;
+        }
+
 
         void read_input(string file_name){
             ifstream file(file_name);
@@ -62,12 +78,11 @@ class Problem
             for (int i = 0; i < this->n; i++){
                 getline(file, line);
 
-                int space = line.find(" ");
-                line = line.substr(space + 1, line.length() - space - 1);
-                space = line.find(" ");
+                auto splited = split(line, " ");
 
-                x = stof(line.substr(0, space));
-                y = stof(line.substr(space + 1, line.length() - space - 1));
+                x = stof(splited[1]);
+                y = stof(splited[2]);
+
                 this->points.push_back(make_pair(x, y));
             }
 
@@ -76,7 +91,7 @@ class Problem
 
         void create_dist_matrix()
         {
-            vvi dist_matrix(this->n, vi(this->n, 0));
+            vvf dist_matrix(this->n, vector<float>(this->n, 0.0f));
             for (int i = 0; i < this->n; i++)
             {
                 for (int j = 0; j < this->n; j++)

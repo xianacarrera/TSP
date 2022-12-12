@@ -1,0 +1,58 @@
+ch130 - 0.98% (1.37)
+seed = 5053, empezando desde 5042 (5033)
+phi = 0.09
+beta = 2.5
+rho = 0.09
+q0 = 97
+    float tau0 = n /  ( (float) length_NN(n, dist_matrix, rand() % n)); // Initial pheromone value
+no esaco
+min (40, 1/4)
+
+d198
+
+
+
+eil76
+
+
+
+fl1577
+
+
+
+
+kroA100 - 0%
+seed = 93
+phi = 0.09
+beta = 2.5
+rho = 0.09
+q0 = 97
+float tau0 = n / ((float) length_NN(problem, rand() % n)); // Initial pheromone value
+
+
+lin318
+
+
+
+
+pcb442
+
+
+
+pr439
+
+
+
+
+rat783
+
+
+
+u1060 - 2.95%
+ESACO_v3
+seed = 334
+phi = 0.35
+beta = 3
+rho = 0.07
+Q0 = 97
+tau = (n * nn)^(-1)
