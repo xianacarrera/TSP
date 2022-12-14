@@ -1,3 +1,12 @@
+/*
+ * Xiana Carrera Alonso
+ * 17th AI Cup
+ * 2022
+ * 
+ * Nearest Neighbours algorithm
+ */
+
+
 #ifndef NN_HPP
 #define NN_HPP
 
@@ -5,11 +14,15 @@
 #include "problem.hpp"
 #include "helper.hpp"
 
+// Optimization flags
+#pragma GCC optimize("O3,unroll-loops")         
+#pragma GCC target("avx,avx2,fma")
+
 using namespace std;
 
-// Data structures 
+// Abbreviations for data structures
 typedef vector<int> vi;
-typedef vector<vi> vvi;
+typedef vector<vector<float>> vvf;
 typedef unordered_set<int> uset;
 typedef pair<float, float> pf;
 #define umap unordered_map
@@ -17,90 +30,74 @@ typedef pair<float, float> pf;
 #define S second
 #define PB push_back
 #define MP make_pair
-#define all(a) (a).begin(), (a).end() // Aplicar a toda la estructura, e.g. sort(all(a))
 
 
-vi NN(Problem * problem, int start_node){
-    float n = problem->n;
-    vvi dist_matrix = problem->dist_matrix;
-
+// NN starting from a random node. Returns the solution 
+vi NN(int n, vvf &dist_matrix, int start_node){
     vi solution(n);
-    uset unvisited;
-    for (int i = 0; i < n; i++){
-        // Initialization in O(n) instead of O(nlog n)
-        //unvisited.emplace_hint(unvisited.end(), i);
-        unvisited.insert(i);
-    }
-    unvisited.erase(start_node);
+    vector<bool> visited(n, false);         // At first, all nodes are unvisited
+    visited[start_node] = true;             // Except the starting node
 
-    int last_node = start_node;
+    int last_node = start_node;     
     solution[0] = start_node;
     
-    for (int i = n - 1; i > 0; i--){        // i is the number of unvisited nodes
-        int min_dist = INF;
+    for (int i = 0; i < n - 1; i++){        // i is the number of unvisited nodes
+        float min_dist = INF;
         int best_node;
 
-        uset::iterator it;
-        for (it = unvisited.begin(); it != unvisited.end(); ++it) {
-            int node_dist = dist_matrix[last_node][*it];
+        for (int j = 0; j < n; j++) {       // Find the closest node
+            if (i == j || visited[j]) continue;         // If the node is the current node or already visited, skip it
+            float node_dist = dist_matrix[last_node][j];
             if (node_dist < min_dist){
                 min_dist = node_dist;
-                best_node = *it;
+                best_node = j;
             }
         }
 
-        solution[n - i] = best_node;
-        last_node = best_node;
-        unvisited.erase(best_node);
+        solution[i + 1] = best_node;        // Add the closest node to the solution
+        last_node = best_node;              // Update the last node
+        visited[best_node] = true;          // Mark the node as visited
     }
     return solution;
 }
 
-int length_NN(Problem * problem, int start_node){
-    float n = problem->n;
-    vvi dist_matrix = problem->dist_matrix;
-
-    uset unvisited;
-    for (int i = 0; i < n; i++){
-        // Initialization in O(n) instead of O(nlog n)
-        //unvisited.emplace_hint(unvisited.end(), i);
-        unvisited.insert(i);
-    }
-    unvisited.erase(start_node);
+// Function that only returns the length of the NN solution, without keeping track of the solution itself
+float length_NN(int n, vvf &dist_matrix, int start_node){
+    vector<bool> visited(n, false);
+    visited[start_node] = true;
+    float length = 0;
 
     int last_node = start_node;
-    int length = 0;
     
-    for (int i = n - 1; i > 0; i--){        // i is the number of unvisited nodes
-        int min_dist = INF;
+    for (int i = 0; i < n - 1; i++){        
+        float min_dist = INF;
         int best_node;
 
-        uset::iterator it;
-        for (it = unvisited.begin(); it != unvisited.end(); ++it) {
-            int node_dist = dist_matrix[last_node][*it];
+        for (int j = 0; j < n; j++) {
+            if (i == j || visited[j]) continue;
+            float node_dist = dist_matrix[last_node][j];
             if (node_dist < min_dist){
                 min_dist = node_dist;
-                best_node = *it;
+                best_node = j;
             }
         }
 
-        length += min_dist;
         last_node = best_node;
-        unvisited.erase(best_node);
+        visited[best_node] = true;
+        length += min_dist;
     }
     return length;
 }
 
-vi best_NN(Problem * problem)
-{
-    int length_best_sol = INF;
+// Best NN: returns the best solution of NN starting from all nodes
+vi best_NN(int n, vvf &dist_matrix){
+    float length_best_sol = INF;
     vi best_sol;
-    for (int i = 0; i < problem->n; i++)
-    {
-        vi sol = NN(problem, i);
-        int length_sol = compute_length(problem, sol);
-        if (length_sol < length_best_sol)
-        {
+    for (int i = 0; i < n; i++){
+        vi sol = NN(n, dist_matrix, i);
+        int length_sol = compute_length(n, dist_matrix, sol);
+
+        if (length_sol < length_best_sol){      // If the solution is better than the best solution, update the best solution
             length_best_sol = length_sol;
             best_sol = sol;
         }
@@ -108,15 +105,12 @@ vi best_NN(Problem * problem)
     return best_sol;
 }
 
-int length_best_NN(Problem * problem)
-{
-    int length_best_sol = INF;
-    for (int i = 0; i < problem->n; i++)
-    {
-        vi sol = NN(problem, i);
-        int length_sol = compute_length(problem, sol);
-        if (length_sol < length_best_sol)
-        {
+// Best NN: returns the length of the best solution of NN starting from all nodes. Does not keep track of the solution itself
+float length_best_NN(int n, vvf &dist_matrix){
+    float length_best_sol = INF;
+    for (int i = 0; i < n; i++){
+        float length_sol = length_NN(n, dist_matrix, i);
+        if (length_sol < length_best_sol){
             length_best_sol = length_sol;
         }
     }
