@@ -86,6 +86,7 @@ class Problem
             for (int i = 0; i < this->n; i++){
                 getline(file, line);
 
+                if (line.size() > 0 && line[0] == ' ') line = line.substr(1, line.length() - 1);     // Remove the first space if it exists
                 auto splited = split(line, " ");        // Split the line by spaces
 
                 // splited[0] is the index of the line

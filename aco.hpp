@@ -244,8 +244,8 @@ vi ESACO(int n, vvf &dist_matrix, float alpha, float beta, float rho, int Q0, bo
     // Initialize candidate lists with the closest cities to each node               
     determine_initial_candidate_lists(candidate_lists, n, dist_matrix, candidate_list_size);
  
-    // The main loop can either be stopped after a certain number of iterations or after 3 minutes have passed
-    while(numIterations < stopOnIter && (((float) clock()) - start_time) / CLOCKS_PER_SEC < 180){
+    // The main loop can either be stopped after a certain number of iterations or after 3 minutes have passed (-2 seconds for safety)
+    while(numIterations < stopOnIter && (((float) clock()) - start_time) / CLOCKS_PER_SEC < 178){
         vector<vector<bool>> visited = vector<vector<bool>>(m, vector<bool>(n, false));    // List of unvisited cities for each ant
         vi ants_lengths(m, 0);      // Length of each ant's path
 
@@ -294,7 +294,10 @@ vi ESACO(int n, vvf &dist_matrix, float alpha, float beta, float rho, int Q0, bo
         }
 
         // Check again that the time limit has not been exceeded
-        if ((((float) clock()) - start_time) / CLOCKS_PER_SEC > 180) return best_ant_sol;
+        if ((((float) clock()) - start_time) / CLOCKS_PER_SEC > 178){
+            cout << "\nTime limit reached: " << (((float) clock()) - start_time) / CLOCKS_PER_SEC << " seconds\n";
+            return best_ant_sol;
+        }
         
         vi best_iter_sol;               // Best solution of this iteration
         int best_iter_len = INF;        // Length of best solution of this iteration
@@ -316,8 +319,10 @@ vi ESACO(int n, vvf &dist_matrix, float alpha, float beta, float rho, int Q0, bo
         }
 
         // Check again that the time limit has not been exceeded
-        if ((((float) clock()) - start_time) / CLOCKS_PER_SEC > 180) return best_ant_sol;
- 
+        if ((((float) clock()) - start_time) / CLOCKS_PER_SEC > 178){
+            cout << "\nTime limit reached: " << (((float) clock()) - start_time) / CLOCKS_PER_SEC << " seconds\n";
+            return best_ant_sol;
+        }
         if (numIterations % 4 == 0 || numIterations % 4 == 2){          // 50% of the time, update the iteration's best ant with 2.5-opt
             best_iter_len += two_five_opt_2(n, dist_matrix, best_iter_sol);
             if (best_iter_len < best_ant_length){
@@ -335,7 +340,10 @@ vi ESACO(int n, vvf &dist_matrix, float alpha, float beta, float rho, int Q0, bo
         }
 
         // Check again that the time limit has not been exceeded
-        if ((((float) clock()) - start_time) / CLOCKS_PER_SEC > 180) return best_ant_sol;
+        if ((((float) clock()) - start_time) / CLOCKS_PER_SEC > 178){
+            cout << "\nTime limit reached: " << (((float) clock()) - start_time) / CLOCKS_PER_SEC << " seconds\n";
+            return best_ant_sol;
+        }
 
         // Update pheromone matrix globally
 
@@ -365,6 +373,7 @@ vi ESACO(int n, vvf &dist_matrix, float alpha, float beta, float rho, int Q0, bo
         if (esaco)  ESACO_update_candidate_lists(candidate_lists, pheromone_matrix, n, best_ant_sol);
         numIterations++;
     }
+    cout << "\nTime limit reached: " << (((float) clock()) - start_time) / CLOCKS_PER_SEC << " seconds\n";
     return best_ant_sol;
 }
 
@@ -400,9 +409,9 @@ vi ESACO_with_NN(int n, vvf &dist_matrix, float alpha, float beta, float rho, in
 
 
     while (improvement || improvement2){          // Improve the best ant solution with 2.5-opt and 2-opt until no improvement is possible
-        improvement = two_five_opt_2(n, dist_matrix, best_ant_sol);
+        improvement = two_five_opt_2(n, dist_matrix, best_ant_sol, 250);
         best_ant_length += improvement;          // Update the length of the best ant solution
-        improvement2 = two_opt_greedy_2(n, dist_matrix, best_ant_sol);
+        improvement2 = two_opt_greedy_2(n, dist_matrix, best_ant_sol, 250);
         best_ant_length += improvement2;         // Update the length of the best ant solution
     }
 
@@ -413,7 +422,7 @@ vi ESACO_with_NN(int n, vvf &dist_matrix, float alpha, float beta, float rho, in
 
     vvf pheromone_matrix(n, vector<float>(n, tau0));                 // Pheromone matrix 
 
-    while((((float) clock()) - start_time) / CLOCKS_PER_SEC < 180){             // Run for 3 minutes
+    while((((float) clock()) - start_time) / CLOCKS_PER_SEC < 178){             // Run for 3 minutes
         vector<vector<bool>> visited = vector<vector<bool>>(m, vector<bool>(n, false));         // Unordered set of visited cities, one set for each ant
         vi ants_lengths(m, 0);       // Length of each ant's path
 
@@ -459,7 +468,10 @@ vi ESACO_with_NN(int n, vvf &dist_matrix, float alpha, float beta, float rho, in
         }
 
         // Check again that the time limit has not been exceeded
-        if ((((float) clock()) - start_time) / CLOCKS_PER_SEC > 180) return best_ant_sol;
+        if ((((float) clock()) - start_time) / CLOCKS_PER_SEC > 178){
+            cout << "\nTime limit reached: " << (((float) clock()) - start_time) / CLOCKS_PER_SEC << " seconds\n";
+            return best_ant_sol;
+        }
         
         vi best_iter_sol;                   // Best ant solution in the current iteration
         int best_iter_len = INF;            // Length of the best ant solution in the current iteration
@@ -480,7 +492,10 @@ vi ESACO_with_NN(int n, vvf &dist_matrix, float alpha, float beta, float rho, in
         }
 
         // Check again that the time limit has not been exceeded
-        if ((((float) clock()) - start_time) / CLOCKS_PER_SEC > 180) return best_ant_sol;
+        if ((((float) clock()) - start_time) / CLOCKS_PER_SEC > 178){
+            cout << "\nTime limit reached: " << (((float) clock()) - start_time) / CLOCKS_PER_SEC << " seconds\n";
+            return best_ant_sol;
+        }
  
         if (numIterations % 4 == 0 || numIterations % 4 == 2){      // Apply 2.5-opt to the best ant solution in the current iteration 50% of the time
             best_iter_len += two_five_opt_2(n, dist_matrix, best_iter_sol);
@@ -499,7 +514,10 @@ vi ESACO_with_NN(int n, vvf &dist_matrix, float alpha, float beta, float rho, in
         }
 
         // Check again that the time limit has not been exceeded
-        if ((((float) clock()) - start_time) / CLOCKS_PER_SEC > 180) return best_ant_sol;
+        if ((((float) clock()) - start_time) / CLOCKS_PER_SEC > 178){
+            cout << "\nTime limit reached: " << (((float) clock()) - start_time) / CLOCKS_PER_SEC << " seconds\n";
+            return best_ant_sol;
+        }
 
         // Update pheromone matrix globally
 
@@ -528,6 +546,7 @@ vi ESACO_with_NN(int n, vvf &dist_matrix, float alpha, float beta, float rho, in
         if (esaco)  ESACO_update_candidate_lists(candidate_lists, pheromone_matrix, n, best_ant_sol);        
         numIterations++;
     }
+    cout << "\nTime limit reached: " << (((float) clock()) - start_time) / CLOCKS_PER_SEC << " seconds\n";
     return best_ant_sol;
 }
 

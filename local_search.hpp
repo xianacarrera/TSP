@@ -26,7 +26,7 @@ typedef vector<vector<float>> vvf;
 
 
 // Applies 2-opt local search to the solution greedily and returns the gain
-float two_opt_greedy_2(int n, vvf &dist_matrix, vi &solution){
+float two_opt_greedy_2(int n, vvf &dist_matrix, vi &solution, int max_iter = 100){
     int best_i;                 // Best i for the 2-opt move
     int best_j;                 // Best j for the 2-opt move
     float best_gain;            // Best gain encountered in the iteration
@@ -56,13 +56,13 @@ float two_opt_greedy_2(int n, vvf &dist_matrix, vi &solution){
             break;
         }
         niter++;
-    } while (best_gain && niter < 100);             // Don't do more than 100 iterations to avoid taking too much time
+    } while (best_gain && niter < max_iter);             // Don't do more than max_iter iterations to avoid taking too much time
     return global_gain;
 }
 
 
 // Applies 2-opt local search stopping as soon as a gain is found
-float two_opt_simplified_2(int n, vvf &dist_matrix, vi &solution){
+float two_opt_simplified_2(int n, vvf &dist_matrix, vi &solution, int max_iter = 100){
     bool improved;
     int best_i;
     int best_j;
@@ -91,12 +91,12 @@ float two_opt_simplified_2(int n, vvf &dist_matrix, vi &solution){
             }
         }   
         n_iter++;
-    } while (improved && n_iter < 100);         // Don't do more than 100 iterations to avoid taking too much time
+    } while (improved && n_iter < max_iter);         // Don't do more than max_iter iterations to avoid taking too much time
     return gain;
 }
 
 // Applies 2.5-opt local search to the solution and returns the global gain
-float two_five_opt_2(int n, vvf &dist_matrix, vi &solution){
+float two_five_opt_2(int n, vvf &dist_matrix, vi &solution, int max_iter = 100){
     int best_i;                 // Best i for the 2.5-opt move
     int best_j;                 // Best j for the 2.5-opt move
     float best_gain = 0;        // Best gain encountered in the iteration
@@ -179,7 +179,7 @@ float two_five_opt_2(int n, vvf &dist_matrix, vi &solution){
                 break;
         }
         n_iter++;
-    } while (opt && n_iter < 100);          // Don't do more than 100 iterations to avoid taking too much time
+    } while (opt && n_iter < max_iter);          // Don't do more than max_iter iterations to avoid taking too much time
     return global_gain;
 }
 

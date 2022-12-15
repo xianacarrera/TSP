@@ -83,7 +83,7 @@ bool check_solution(int n, vi sol){
 void write_results(string filename, int seed, string name, float error){
     ofstream file;
     file.open(filename, ios::app);
-    file << name << "; " << seed << "; " << error << "\n";
+    file << name << "; " << seed << "; " << error << "% " << "\n";
     file.close();
 }
 

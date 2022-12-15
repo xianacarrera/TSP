@@ -9,6 +9,6 @@ seed=5053      # seed for random number generator
 
 for j in $( eval echo {0..9} )
 do
-    ./main $seed 8
+    ./main $seed $j
 done
 
