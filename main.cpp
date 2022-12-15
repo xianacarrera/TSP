@@ -100,9 +100,7 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    float error = compute_error(problem, sol);                    // Compute the error and print it
-
-    write_results("results.csv", seed, problem->name, error);     // Write the results to a file
+    compute_error(problem, sol);                    // Compute the error and print it
 
     return 0;
 }

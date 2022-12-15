@@ -52,6 +52,14 @@ int compute_length(int n, vvf &distance_matrix, vi solution) {
     return length;
 }
 
+// Write the results to a file
+void write_results(string filename, int length, string name, float error){
+    ofstream file;
+    file.open(filename, ios::app);
+    file << name << "; " << length << "; " << error << "% " << "\n";
+    file.close();
+}
+
 // Compute the error (gap) of a solution
 float compute_error(Problem * problem, vi solution){
     int length = compute_length(problem->n, problem->dist_matrix, solution);
@@ -60,6 +68,8 @@ float compute_error(Problem * problem, vi solution){
     cout << "\tBest known: " << problem->best_known << "\n";
     cout << "\tSolution: " << length << "\n";
     cout << "\tError: " << error << "%\n";
+
+    write_results("results.csv", length, problem->name, error);
     return error;
 }
 
@@ -79,13 +89,6 @@ bool check_solution(int n, vi sol){
 }
 
 
-// Write the results to a file
-void write_results(string filename, int seed, string name, float error){
-    ofstream file;
-    file.open(filename, ios::app);
-    file << name << "; " << seed << "; " << error << "% " << "\n";
-    file.close();
-}
 
 // Write the parameters used to a file
 void write_params(string filename, float p0, float p1, float p2, int p3, bool p4, int p5, int p6, int p7, int p8){
